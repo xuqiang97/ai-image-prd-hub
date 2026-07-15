@@ -104,6 +104,7 @@ M-35944-asin-query-logic
 
 | 日期 | 需求编号 | 业务端 | 需求名称 | 需求类型 | PRD |
 |---|---|---|---|---|---|
+| 2026-07-16 | M-36509 | 美工+运营 | L2审核工作台和L3沉浸式大屏补充展示类目字段 | 修复 | [查看 PRD](prd/2026-07/M-36509-category-dimension-display/README.md) |
 | 2026-07-15 | M-36508 | 运营 | 图片查询接口扩展支持站点+ASIN及纯ASIN查询 | 接口 | [查看 PRD](prd/2026-07/M-36508-image-query-dimensions/README.md) |
 | 2026-07-10 | M-36422 | 美工+运营 | 模型与数量配置支持前端本地缓存记忆上一次的 | 缓存 | [查看 PRD](prd/2026-07/M-36422-model-quantity-cache/README.md) |
 
