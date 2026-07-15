@@ -1,8 +1,8 @@
 # M-36422【AI生图】[美工+运营]模型与数量配置支持前端本地缓存记忆上一次的（责任人：徐强）
 
-禅道需求：[M-36422](https://pm.zhcxkj.com/zentao/story-view-36422.html)
+禅道需求：[https://pm.zhcxkj.com/zentao/story-view-36422.html](https://pm.zhcxkj.com/zentao/story-view-36422.html)
 
-GitHub PRD：[ai-image-prd-hub/prd/2026-07/M-36422-model-quantity-cache/README.md](https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07/M-36422-model-quantity-cache/README.md)
+GitHub PRD：[https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07/M-36422-model-quantity-cache/README.md](https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07/M-36422-model-quantity-cache/README.md)
 
 ## 修改纪要
 
