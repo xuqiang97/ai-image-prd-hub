@@ -109,6 +109,8 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07
 
 站点+ASIN及纯 ASIN查询不受当前运营人员所属组织、部门、组或当前可管理店铺范围限制，但仍需通过接口现有鉴权。被封禁或停用老店铺的历史生图数据只要仍然存在且满足图片可用条件，应正常返回，不得按店铺当前状态过滤。
 
+AI 生图任务表已保存 `site`，且已确认历史运营任务的站点数据完整，本期无需补充或回填历史 `site` 数据。
+
 ### 4. 可返回图片范围
 
 三种查询模式统一遵循以下规则：
@@ -133,16 +135,16 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07
 
 ### 5. 返回结构
 
-现有成功结构和图片字段保持兼容，每张图片明细需返回来源信息：
+现有成功结构和图片字段保持兼容，每张图片明细新增以下来源信息：
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
-| `orderSourceId` | `Integer` | 单张图片对应的来源店铺 ID，保持现有字段定义，三种查询模式下均需准确返回。 |
+| `orderSourceId` | `Integer` | 本期新增返回字段，表示单张图片对应的来源店铺 ID。 |
 | `site` | `String` | 本期新增返回字段，取该图片对应任务保存的来源站点。 |
 
-注意区分：`orderSourceIds`（复数）是请求入参，本次由必填改为非必填；`orderSourceId`（单数）是单张图片的来源店铺返回字段。
+注意区分：`orderSourceIds`（复数）是现有请求入参，本次由必填改为非必填；`orderSourceId`（单数）是本期新增的单张图片来源店铺返回字段。
 
-来源字段在三种查询模式下均返回，便于 Listing 识别图片来源并灵活展示或使用。现有图片字段 `id`、`imageType`、`imageUrl`、`width`、`height`、`size`、`format`、`sellPoint`、`isWhiteBackground` 保持不变。
+新增来源字段在三种查询模式下均返回，便于 Listing 识别图片来源并灵活展示或使用。现有图片字段 `id`、`imageType`、`imageUrl`、`width`、`height`、`size`、`format`、`sellPoint`、`isWhiteBackground` 保持不变。
 
 顶层 `data.orderSourceIds` 继续用于回显请求参数：
 
@@ -161,16 +163,17 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07
 
 ### 7. 上线前协作备忘
 
-- 接口提测或正式上线前，由产品徐强将本次变更同步给 Listing 负责人，说明 `orderSourceIds` 改为非必填、新增非必填入参 `site`，以及响应明细新增来源站点 `site`。
+- 接口提测或正式上线前，由产品徐强将本次变更同步给 Listing 负责人，说明 `orderSourceIds` 改为非必填、新增非必填入参 `site`，以及响应明细新增来源店铺 `orderSourceId` 和来源站点 `site`。
 - Listing 本期无需同步接入新查询模式，但需确认当前线上版本能够兼容新增返回字段，不会因严格反序列化、字段校验或前端解析导致现有取图异常。
 - 优先使用当前线上 Listing 版本调用升级后的接口，验证请求成功、响应解析成功、图片正常展示和选择。正常预期为新增字段不影响老调用方，但正式上线前仍需完成沟通确认。
+- 接口开发完成后同步更新 ShowDoc：将 `orderSourceIds` 调整为非必填，新增 `site` 入参，补充 `orderSourceId`、`site` 出参、三种请求示例及参数优先级。
 
 ## 风险描述
 
 | 风险 | 处理方式 |
 |---|---|
 | 接口已被 Listing 在线使用，改造可能影响现有取图 | 按向后兼容方式扩展；保留 `orderSourceIds + asin` 原逻辑，新增参数均非必填，接口可先行上线。 |
-| 响应新增 `site` 字段可能影响下游严格解析 | 上线前同步 Listing 负责人，并使用当前线上版本完成真实接口兼容验证。 |
+| 响应新增 `orderSourceId`、`site` 字段可能影响下游严格解析 | 上线前同步 Listing 负责人，并使用当前线上版本完成真实接口兼容验证。 |
 | 当前模式无结果时被误实现为自动扩大查询范围 | 每次只执行参数对应的查询模式，无结果直接返回空列表，由下游决定是否重新扩大范围查询。 |
 | 纯 ASIN查询跨站点，可能返回不同站点来源图片 | 每张图片返回来源 `orderSourceId` 和 `site`，由下游结合业务场景选择使用。 |
 | 查询范围扩大后结果数量增加 | 业务已确认继续返回全部历史可用图片，本期不增加分页和数量限制。 |
@@ -197,6 +200,7 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07
 | 14 | 查询有图片 | `hasAvailableImages=true`；每张图片返回准确的 `orderSourceId` 和 `site`，顶层 `orderSourceIds` 按请求参数回显。 |
 | 15 | `asin` 缺失或仅包含空格 | 返回参数错误，不返回业务数据。 |
 | 16 | 对比接口升级前后的原模式响应 | 原有字段名称、类型、图片范围、排序、全量返回及 `isWhiteBackGround` 现有行为保持不变，新增字段不影响老调用方解析。 |
+| 17 | 接口开发完成并准备交付下游使用 | ShowDoc 已更新 `orderSourceIds` 必填规则、`site` 入参、`orderSourceId`/`site` 出参、三种请求示例及参数优先级。 |
 
 ## 关联需求与参考资料
 
