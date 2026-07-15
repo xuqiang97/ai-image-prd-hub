@@ -1,8 +1,8 @@
 # M-36508【AI生图】[运营]图片查询接口扩展支持站点+ASIN及纯ASIN查询（责任人：徐强）
 
-禅道需求：[M-36508](https://pm.zhcxkj.com/zentao/story-view-36508.html)
+禅道需求：https://pm.zhcxkj.com/zentao/story-view-36508.html
 
-GitHub PRD：[ai-image-prd-hub/prd/2026-07/M-36508-image-query-dimensions/README.md](https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07/M-36508-image-query-dimensions/README.md)
+GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07/M-36508-image-query-dimensions/README.md
 
 ## 修改纪要
 
