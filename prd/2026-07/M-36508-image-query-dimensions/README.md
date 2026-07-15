@@ -8,7 +8,7 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07
 
 | 日期 | 版本 | 修改人 | 主要修改点 |
 |---|---|---|---|
-| 2026-07-15 | V1.0 | 徐强 | 新建 PRD，明确现有 Listing 调用兼容原则，以及运营版非 A+ 商品图片查询接口新增站点+ASIN、纯 ASIN 查询能力的入参、范围和验收标准。 |
+| 2026-07-15 | V1.0 | 徐强 | 新建 PRD，明确现有 Listing 调用兼容原则，以及运营版非 A+ 商品图片查询接口新增站点+ASIN、纯 ASIN 查询能力的入参、范围、返回字段和验收标准。 |
 
 ## 调研纪要
 
@@ -38,6 +38,8 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07
 
 本次为现有接口的向后兼容扩展，不替换、不下线原店铺+ASIN能力。AI 生图接口可先于 Listing 新查询方式改造独立上线；Listing 尚未改造期间，继续按现有 `orderSourceIds + asin` 请求即可正常查询。后续 Listing 可按实际场景逐步接入站点+ASIN或纯 ASIN模式。
 
+接口每次只执行请求参数对应的一种查询模式。当前模式无结果时，不自动从店铺+ASIN扩大为站点+ASIN或纯 ASIN；下游如需扩大查询范围，应按对应参数重新调用接口。
+
 本期只调整运营版非 A+ 商品图片查询接口，不新增页面，不调整生图、审核、A+ 推送及非 A+ 下游自取流程。
 
 ## 功能需求
@@ -47,24 +49,54 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07
 | 参数 | 类型 | 必填规则 | 处理口径 |
 |---|---|---|---|
 | `asin` | `String` | 必填 | 去除前后空格后不能为空，继续按 ASIN 精确查询。 |
-| `orderSourceIds` | `List<Integer>` | 否 | 由原必填调整为非必填。非空时按店铺+ASIN查询；未传、`null` 或空数组时，不限定店铺并继续根据 `site` 判断查询模式。该字段为 Listing 系统使用的店铺唯一 ID。 |
-| `site` | `String` | 否 | 本期新增非必填字段。无有效 `orderSourceIds` 且 `site` 非空时，按站点+ASIN查询；站点值使用任务表已保存的 `site`，如 `US`、`DE`。 |
+| `orderSourceIds` | `List<Integer>` | 否 | 现有入参，由原必填调整为非必填。非空时按店铺+ASIN查询；未传、`null` 或空数组时，不限定店铺并继续根据 `site` 判断查询模式。该字段为 Listing 系统使用的店铺唯一 ID。 |
+| `site` | `String` | 否 | 本期新增非必填入参。无有效 `orderSourceIds` 且 `site` 去除前后空格后非空时，按站点+ASIN查询；按任务表已保存的标准站点编码精确匹配，如 `US`、`DE`。去除前后空格后为空时按未传处理。 |
 | `isWhiteBackGround` | `Boolean` | 否 | 现有白底首图/主图预留参数，本期不调整其含义和处理逻辑。 |
 
 查询模式按以下优先级自动识别：
 
 1. `orderSourceIds` 非空：按店铺+ASIN查询；即使同时传入 `site`，也以 `orderSourceIds` 为准，`site` 不参与本次查询。
-2. `orderSourceIds` 未传、为 `null` 或为空数组，且 `site` 非空：按站点+ASIN查询。
-3. `orderSourceIds` 未传、为 `null` 或为空数组，且 `site` 未传或为空：按纯 ASIN查询。
+2. `orderSourceIds` 未传、为 `null` 或为空数组，且 `site` 去除前后空格后非空：按站点+ASIN查询。
+3. `orderSourceIds` 未传、为 `null` 或为空数组，且 `site` 未传、为 `null` 或去除前后空格后为空：按纯 ASIN查询。
 4. `asin` 缺失或去除前后空格后为空：返回参数错误，不查询业务数据。
+
+站点编码大小写沿用系统现有标准编码规范，本期不新增自动大小写转换规则。
+
+请求示例：
+
+店铺+ASIN：
+
+```json
+{
+  "orderSourceIds": [17231],
+  "asin": "B0G5HNVDB1"
+}
+```
+
+站点+ASIN：
+
+```json
+{
+  "site": "US",
+  "asin": "B0G5HNVDB1"
+}
+```
+
+纯 ASIN：
+
+```json
+{
+  "asin": "B0G5HNVDB1"
+}
+```
 
 ### 2. 兼容上线原则
 
 - 当前 Listing 已在线使用 `orderSourceIds + asin` 查询取图，本次改造不得要求老调用方同步修改后才能使用。
 - AI 生图接口可先行开发、测试并上线；接口上线后，原 Listing 请求参数、查询范围和返回主结构继续有效。
-- `orderSourceIds` 从必填调整为非必填，仅用于开放新的查询模式，不得改变其非空时的原查询逻辑。
-- 新增 `site` 为非必填字段，老调用方不传该字段时不得报错或影响原店铺+ASIN查询。
-- 新增返回字段采用兼容性扩展方式，不删除、不重命名、不改变现有字段类型，避免影响 Listing 现有解析。
+- `orderSourceIds` 是现有请求字段，本次仅从必填调整为非必填，用于开放新的查询模式；不得误写为新增字段，也不得改变其非空时的原查询逻辑。
+- 新增 `site` 为非必填请求字段，老调用方不传该字段时不得报错或影响原店铺+ASIN查询。
+- 返回字段采用兼容性扩展方式，不删除、不重命名、不改变现有字段类型，避免影响 Listing 现有解析。
 - 下游可根据改造进度灵活选用三种模式，不要求一次性切换或废弃现有模式。
 
 ### 3. 三种查询范围
@@ -99,16 +131,18 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07
 
 `imageType=2`“特写图白底”属于特写图，不等同于公司所称的白底首图/主图；不得使用 `isWhiteBackGround` 将 `imageType=2` 排除。`isWhiteBackGround` 继续作为白底首图/主图预留参数，当前无对应图片数据，本期不扩展该能力。
 
-### 5. 返回结构扩展
+### 5. 返回结构
 
-现有成功结构和图片字段保持兼容，在每张图片明细中新增来源信息：
+现有成功结构和图片字段保持兼容，每张图片明细需返回来源信息：
 
 | 字段 | 类型 | 说明 |
 |---|---|---|
-| `orderSourceId` | `Integer` | 该图片对应的来源店铺 ID。 |
-| `site` | `String` | 该图片对应任务保存的来源站点。 |
+| `orderSourceId` | `Integer` | 单张图片对应的来源店铺 ID，保持现有字段定义，三种查询模式下均需准确返回。 |
+| `site` | `String` | 本期新增返回字段，取该图片对应任务保存的来源站点。 |
 
-新增字段在三种查询模式下均返回，便于 Listing 识别图片来源并灵活展示或使用。现有图片字段 `id`、`imageType`、`imageUrl`、`width`、`height`、`size`、`format`、`sellPoint`、`isWhiteBackground` 保持不变。
+注意区分：`orderSourceIds`（复数）是请求入参，本次由必填改为非必填；`orderSourceId`（单数）是单张图片的来源店铺返回字段。
+
+来源字段在三种查询模式下均返回，便于 Listing 识别图片来源并灵活展示或使用。现有图片字段 `id`、`imageType`、`imageUrl`、`width`、`height`、`size`、`format`、`sellPoint`、`isWhiteBackground` 保持不变。
 
 顶层 `data.orderSourceIds` 继续用于回显请求参数：
 
@@ -120,15 +154,24 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07
 ### 6. 无数据、异常和兼容规则
 
 - 查询成功但没有符合条件的图片时，返回 `success=true`、`images=[]`、`hasAvailableImages=false`，不作为接口异常。
+- 某一查询模式无结果时仅返回该模式的空结果，不自动扩大到其他查询模式。
 - 老调用方继续使用 `orderSourceIds + asin` 请求时，查询范围和现有业务结果保持不变；新增参数和返回字段不得影响原请求及字段解析。
 - `orderSourceIds` 中店铺 ID 的合法性、接口鉴权失败及其他通用异常继续沿用现有接口处理。
 - 本期不新增数据权限配置，不修改 AI 生图任务表中的历史数据，不新增图片去重规则。
+
+### 7. 上线前协作备忘
+
+- 接口提测或正式上线前，由产品徐强将本次变更同步给 Listing 负责人，说明 `orderSourceIds` 改为非必填、新增非必填入参 `site`，以及响应明细新增来源站点 `site`。
+- Listing 本期无需同步接入新查询模式，但需确认当前线上版本能够兼容新增返回字段，不会因严格反序列化、字段校验或前端解析导致现有取图异常。
+- 优先使用当前线上 Listing 版本调用升级后的接口，验证请求成功、响应解析成功、图片正常展示和选择。正常预期为新增字段不影响老调用方，但正式上线前仍需完成沟通确认。
 
 ## 风险描述
 
 | 风险 | 处理方式 |
 |---|---|
 | 接口已被 Listing 在线使用，改造可能影响现有取图 | 按向后兼容方式扩展；保留 `orderSourceIds + asin` 原逻辑，新增参数均非必填，接口可先行上线。 |
+| 响应新增 `site` 字段可能影响下游严格解析 | 上线前同步 Listing 负责人，并使用当前线上版本完成真实接口兼容验证。 |
+| 当前模式无结果时被误实现为自动扩大查询范围 | 每次只执行参数对应的查询模式，无结果直接返回空列表，由下游决定是否重新扩大范围查询。 |
 | 纯 ASIN查询跨站点，可能返回不同站点来源图片 | 每张图片返回来源 `orderSourceId` 和 `site`，由下游结合业务场景选择使用。 |
 | 查询范围扩大后结果数量增加 | 业务已确认继续返回全部历史可用图片，本期不增加分页和数量限制。 |
 | 跨店铺查询与原组织权限规则冲突 | 业务已确认站点+ASIN及纯 ASIN查询覆盖公司全部运营生图数据，仅保留接口现有鉴权。 |
@@ -140,17 +183,20 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07
 |---:|---|---|
 | 1 | 现有 Listing 不做任何改造，继续传入非空 `orderSourceIds + asin` | 接口升级后仍按指定店铺+ASIN正常查询，查询范围和原业务结果不变；新增 `site` 未传时不报错。 |
 | 2 | AI 生图接口先上线，Listing 尚未接入新查询模式 | 现有线上取图链路持续可用，不依赖 Listing 同步发布。 |
-| 3 | 不传有效 `orderSourceIds`，传入 `site + asin` | 返回公司全部运营生图数据中该站点、该 ASIN的全部历史可用图片，可命中不同店铺及被封禁或停用老店铺。 |
-| 4 | 仅传入 `asin` | 跨全部 Amazon 站点和店铺返回该 ASIN的全部历史可用图片。 |
-| 5 | `orderSourceIds` 分别未传、传 `null`、传空数组，并按需传入或不传 `site` | 分别正确识别为站点+ASIN或纯 ASIN模式，不再因缺少店铺 ID 返回必填校验错误。 |
-| 6 | 同时传入非空 `orderSourceIds`、`site` 和 `asin` | 以 `orderSourceIds` 为准按店铺+ASIN查询，`site` 不参与查询。 |
-| 7 | 同一查询范围存在多个历史任务 | 返回所有历史任务中业务审核通过的可用图片，不只返回最新任务。 |
-| 8 | 查询结果同时存在 `imageType=1、2、3、4、5` | 只返回 1～4；标准普通 A+ 图 `imageType=5` 不返回。`imageType=2` 不因 `isWhiteBackGround` 预留逻辑被错误排除。 |
-| 9 | 当前登录用户与来源店铺不属于同一组织、部门或店铺权限范围 | 站点+ASIN及纯 ASIN模式仍可返回符合条件的图片；无有效鉴权时仍按现有规则拒绝访问。 |
-| 10 | 查询无符合条件的图片 | 返回 `success=true`、`images=[]`、`hasAvailableImages=false`；站点+ASIN及纯 ASIN模式下 `orderSourceIds=[]`。 |
-| 11 | 查询有图片 | `hasAvailableImages=true`；每张图片返回准确的 `orderSourceId` 和 `site`，顶层 `orderSourceIds` 按请求参数回显。 |
-| 12 | `asin` 缺失或仅包含空格 | 返回参数错误，不返回业务数据。 |
-| 13 | 对比接口升级前后的原模式响应 | 原有字段名称、类型、图片范围、排序、全量返回及 `isWhiteBackGround` 现有行为保持不变，新增字段不影响老调用方解析。 |
+| 3 | 使用当前线上 Listing 版本调用升级后的接口 | 请求和响应解析成功，图片可正常展示和选择；新增返回字段不引发现有取图异常。 |
+| 4 | 不传有效 `orderSourceIds`，传入 `site + asin` | 返回公司全部运营生图数据中该站点、该 ASIN的全部历史可用图片，可命中不同店铺及被封禁或停用老店铺。 |
+| 5 | 仅传入 `asin` | 跨全部 Amazon 站点和店铺返回该 ASIN的全部历史可用图片。 |
+| 6 | `orderSourceIds` 分别未传、传 `null`、传空数组，并按需传入或不传 `site` | 分别正确识别为站点+ASIN或纯 ASIN模式，不再因缺少店铺 ID 返回必填校验错误。 |
+| 7 | `site` 前后包含空格或去除空格后为空 | 前后空格被忽略；有效值按标准站点编码精确匹配，空值按未传处理。 |
+| 8 | 同时传入非空 `orderSourceIds`、`site` 和 `asin` | 以 `orderSourceIds` 为准按店铺+ASIN查询，`site` 不参与查询。 |
+| 9 | 店铺+ASIN模式未查询到图片，但相同 ASIN在其他店铺或站点存在图片 | 本次仍返回店铺+ASIN模式空结果，不自动返回其他店铺或站点图片。 |
+| 10 | 同一查询范围存在多个历史任务 | 返回所有历史任务中业务审核通过的可用图片，不只返回最新任务。 |
+| 11 | 查询结果同时存在 `imageType=1、2、3、4、5` | 只返回 1～4；标准普通 A+ 图 `imageType=5` 不返回。`imageType=2` 不因 `isWhiteBackGround` 预留逻辑被错误排除。 |
+| 12 | 当前登录用户与来源店铺不属于同一组织、部门或店铺权限范围 | 站点+ASIN及纯 ASIN模式仍可返回符合条件的图片；无有效鉴权时仍按现有规则拒绝访问。 |
+| 13 | 查询无符合条件的图片 | 返回 `success=true`、`images=[]`、`hasAvailableImages=false`；站点+ASIN及纯 ASIN模式下 `orderSourceIds=[]`。 |
+| 14 | 查询有图片 | `hasAvailableImages=true`；每张图片返回准确的 `orderSourceId` 和 `site`，顶层 `orderSourceIds` 按请求参数回显。 |
+| 15 | `asin` 缺失或仅包含空格 | 返回参数错误，不返回业务数据。 |
+| 16 | 对比接口升级前后的原模式响应 | 原有字段名称、类型、图片范围、排序、全量返回及 `isWhiteBackGround` 现有行为保持不变，新增字段不影响老调用方解析。 |
 
 ## 关联需求与参考资料
 
