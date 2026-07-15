@@ -97,10 +97,10 @@ GitHub PRD：[ai-image-prd-hub/prd/2026-07/M-36508-image-query-dimensions/README
 
 新增字段在三种查询模式下均返回，便于 Listing 识别图片来源并灵活展示或使用。现有图片字段 `id`、`imageType`、`imageUrl`、`width`、`height`、`size`、`format`、`sellPoint`、`isWhiteBackground` 保持不变。
 
-顶层 `data.orderSourceIds` 处理规则：
+顶层 `data.orderSourceIds` 继续用于回显请求参数：
 
-- 店铺+ASIN模式：继续回显本次请求的 `orderSourceIds`。
-- 站点+ASIN及纯 ASIN模式：返回本次查询结果实际命中的来源店铺 ID 去重集合；无可用图片时返回空数组。
+- 店铺+ASIN模式：回显本次请求的 `orderSourceIds`。
+- 站点+ASIN及纯 ASIN模式：因请求未传有效 `orderSourceIds`，返回空数组；具体来源店铺以各图片的 `orderSourceId` 为准。
 
 `data.asin` 继续回显查询 ASIN。`data.hasAvailableImages` 根据 `images` 是否非空判断：有图片为 `true`，无图片为 `false`。
 
@@ -132,7 +132,7 @@ GitHub PRD：[ai-image-prd-hub/prd/2026-07/M-36508-image-query-dimensions/README
 | 6 | 查询结果同时存在 `imageType=1、2、3、4、5` | 只返回 1～4；标准普通 A+ 图 `imageType=5` 不返回。`imageType=2` 不因 `isWhiteBackGround` 预留逻辑被错误排除。 |
 | 7 | 当前登录用户与来源店铺不属于同一组织、部门或店铺权限范围 | 站点+ASIN及纯 ASIN模式仍可返回符合条件的图片；无有效鉴权时仍按现有规则拒绝访问。 |
 | 8 | 查询无符合条件的图片 | 返回 `success=true`、`images=[]`、`hasAvailableImages=false`；站点+ASIN及纯 ASIN模式下 `orderSourceIds=[]`。 |
-| 9 | 查询有图片 | `hasAvailableImages=true`；每张图片的来源店铺和来源站点与任务数据一致，顶层 `orderSourceIds` 符合对应模式规则。 |
+| 9 | 查询有图片 | `hasAvailableImages=true`；每张图片的来源店铺和来源站点与任务数据一致，顶层 `orderSourceIds` 按请求参数回显。 |
 | 10 | `asin` 缺失或仅包含空格 | 返回参数错误，不返回业务数据。 |
 | 11 | 原 Listing 调用方继续按原参数调用 | 原有请求可正常使用，查询排序、全量返回、图片字段及 `isWhiteBackGround` 现有行为不变。 |
 
