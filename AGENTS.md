@@ -90,8 +90,8 @@ prd/2026-06/M-35944-asin-query-logic/README.md
 PRD 前部一般包括：
 
 1. 文档标题
-2. 禅道需求链接
-3. GitHub PRD 完整路径
+2. 禅道需求完整 URL
+3. GitHub PRD 完整 URL
 4. 修改纪要
 5. 调研纪要
 6. 业务背景和价值
@@ -107,16 +107,16 @@ PRD 前部一般包括：
 - 章节下的模块和规则使用三级标题 `###`。
 - 不使用加粗正文模拟标题。
 
-禅道链接下一行必须放置该需求 README.md 的 GitHub 完整链接，方便复制到钉钉后回跳原文。
+禅道需求和 GitHub PRD 必须直接展示完整 URL，不使用 `[文字](URL)` 形式隐藏地址。GitHub PRD 放在禅道需求下一行，方便复制到钉钉文档后直接查看和回跳原文。
 
 推荐起始结构：
 
 ```text
 # M-xxxxx【AI生图】[运营/美工/美工+运营/公共]需求名称（责任人：徐强）
 
-禅道需求：[M-xxxxx](禅道链接)
+禅道需求：https://pm.zhcxkj.com/zentao/story-view-xxxxx.html
 
-GitHub PRD：[仓库名/prd/YYYY-MM/M-xxxxx-英文短名/README.md](GitHub 完整链接)
+GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/YYYY-MM/M-xxxxx-英文短名/README.md
 
 ## 修改纪要
 
@@ -258,4 +258,5 @@ AI 完成 PRD 初稿后，必须主动进行一次全盘复核，再交付最终
 - 不得修改历史需求的已确认口径，除非用户明确要求。
 - 不得将明显需要 HTML 原型的需求强行放入本仓库。
 - 不得用 GitHub 索引重复维护禅道中的开发、测试和上线状态。
+- 不得将 PRD 顶部的禅道需求和 GitHub PRD 写成隐藏完整地址的 Markdown 链接。
 - 未取得正式需求名称和禅道信息前，不得默认创建 `TEMP` 目录。
