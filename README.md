@@ -104,6 +104,7 @@ M-35944-asin-query-logic
 
 | 日期 | 需求编号 | 业务端 | 需求名称 | 需求类型 | PRD |
 |---|---|---|---|---|---|
+| 2026-07-20 | M-36575 | 美工+运营 | 阿里绘蛙生成图片宽高信息存储优化 | 接口 | [查看 PRD](prd/2026-07/M-36575-huiwa-image-dimensions/README.md) |
 | 2026-07-20 | M-36570 | 运营 | 标普A+审核通过上限从5张调整为7张 | 规则 | [查看 PRD](prd/2026-07/M-36570-standard-a-plus-approval-limit/README.md) |
 | 2026-07-16 | M-36509 | 美工+运营 | L2审核工作台和L3沉浸式大屏补充展示类目字段 | 修复 | [查看 PRD](prd/2026-07/M-36509-category-dimension-display/README.md) |
 | 2026-07-15 | M-36508 | 运营 | 图片查询接口扩展支持站点+ASIN及纯ASIN查询 | 接口 | [查看 PRD](prd/2026-07/M-36508-image-query-dimensions/README.md) |
