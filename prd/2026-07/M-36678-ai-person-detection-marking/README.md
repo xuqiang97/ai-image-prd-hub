@@ -4,6 +4,8 @@
 
 GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07/M-36678-ai-person-detection-marking/README.md
 
+业务背景必看：https://alidocs.dingtalk.com/i/nodes/YndMj49yWjPBKdL0cRRzk3KeJ3pmz5aA?utm_scene=team_space
+
 ## 需求概要图
 
 本需求采用“同一需求、两个实施阶段、一套合规处理链路”的方式实施：先上线增量自动检测和标记，再紧接着执行历史存量刷数。
