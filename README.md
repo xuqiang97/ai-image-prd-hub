@@ -104,6 +104,7 @@ M-35944-asin-query-logic
 
 | 日期 | 需求编号 | 业务端 | 需求名称 | 需求类型 | PRD |
 |---|---|---|---|---|---|
+| 2026-07-29 | M-36753 | 运营 | 图片查询接口新增人物检测结果出参 | 接口 | [查看 PRD](prd/2026-07/M-36753-image-query-person-detection-status/README.md) |
 | 2026-07-28 | M-36678 | 美工+运营 | 亚马逊平台紧急要求检测并标记是否有AI生成人物 | 规则 | [查看 PRD](prd/2026-07/M-36678-ai-person-detection-marking/README.md) |
 | 2026-07-21 | M-36575 | 美工+运营 | 阿里绘蛙生成图片宽高信息存储优化 | 接口 | [查看 PRD](prd/2026-07/M-36575-huiwa-image-dimensions/README.md) |
 | 2026-07-20 | M-36570 | 运营 | 标普A+审核通过上限从5张调整为7张 | 规则 | [查看 PRD](prd/2026-07/M-36570-standard-a-plus-approval-limit/README.md) |
