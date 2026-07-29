@@ -8,6 +8,7 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07
 
 | 日期 | 版本 | 修改人 | 主要修改点 |
 |---|---|---|---|
+| 2026-07-29 | V1.1 | 徐强 | 补充 M-36753 先行新增的 `personDetectStatus` 现有响应字段基线，明确三种查询模式均需保留并验证人物检测结果出参。 |
 | 2026-07-15 | V1.0 | 徐强 | 新建 PRD，明确现有 Listing 调用兼容原则，以及运营版非 A+ 商品图片查询接口新增站点+ASIN、纯 ASIN 查询能力的入参、范围、返回字段和验收标准。 |
 
 ## 调研纪要
@@ -37,6 +38,8 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07
 3. 纯 ASIN：仅传入 `asin`，跨全部 Amazon 站点查询。
 
 本次为现有接口的向后兼容扩展，不替换、不下线原店铺+ASIN能力。AI 生图接口可先于 Listing 新查询方式改造独立上线；Listing 尚未改造期间，继续按现有 `orderSourceIds + asin` 请求即可正常查询。后续 Listing 可按实际场景逐步接入站点+ASIN或纯 ASIN模式。
+
+M-36753 将先于本需求在单图结果中新增 `personDetectStatus` 人物检测结果出参。本需求实施时，该字段属于现有响应字段，店铺+ASIN、站点+ASIN和纯 ASIN三种模式均须继续返回，不得因查询维度扩展而丢失或改变口径。
 
 接口每次只执行请求参数对应的一种查询模式。当前模式无结果时，不自动从店铺+ASIN扩大为站点+ASIN或纯 ASIN；下游如需扩大查询范围，应按对应参数重新调用接口。
 
@@ -97,6 +100,7 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-07
 - `orderSourceIds` 是现有请求字段，本次仅从必填调整为非必填，用于开放新的查询模式；不得误写为新增字段，也不得改变其非空时的原查询逻辑。
 - 新增 `site` 为非必填请求字段，老调用方不传该字段时不得报错或影响原店铺+ASIN查询。
 - 返回字段采用兼容性扩展方式，不删除、不重命名、不改变现有字段类型，避免影响 Listing 现有解析。
+- M-36753 新增的 `personDetectStatus` 是本需求实施时的现有单图响应字段，三种查询模式均须保留其 `Integer` 类型及 `0`～`3` 枚举含义，不得删除、重命名或根据查询模式改变返回规则。
 - 下游可根据改造进度灵活选用三种模式，不要求一次性切换或废弃现有模式。
 
 ### 3. 三种查询范围
@@ -144,7 +148,9 @@ AI 生图任务表已保存 `site`，且已确认历史运营任务的站点数�
 
 注意区分：`orderSourceIds`（复数）是现有请求入参，本次由必填改为非必填；`orderSourceId`（单数）是本期新增的单张图片来源店铺返回字段。
 
-新增来源字段在三种查询模式下均返回，便于 Listing 识别图片来源并灵活展示或使用。现有图片字段 `id`、`imageType`、`imageUrl`、`width`、`height`、`size`、`format`、`sellPoint`、`isWhiteBackground` 保持不变。
+新增来源字段在三种查询模式下均返回，便于 Listing 识别图片来源并灵活展示或使用。现有图片字段 `id`、`imageType`、`imageUrl`、`width`、`height`、`size`、`format`、`sellPoint`、`isWhiteBackground`、`personDetectStatus` 保持不变。
+
+`personDetectStatus` 为 M-36753 先行新增的 `Integer` 单图字段：`0` 表示未检测、`1` 表示有人物、`2` 表示无人物、`3` 表示检测失败，历史 `null` 或空值按 `0` 返回。本需求不改变该字段的数据来源和映射规则，三种查询模式均按对应图片记录返回。
 
 关键返回字段示例（以下以站点+ASIN或纯 ASIN模式为例，其他现有字段保持不变）：
 
@@ -163,6 +169,7 @@ AI 生图任务表已保存 `site`，且已确认历史运营任务的站点数�
         "site": "US",
         "imageType": 1,
         "imageUrl": "https://example.com/aio_l_88104002.jpg",
+        "personDetectStatus": 1,
         "width": 2048,
         "height": 2048,
         "size": null,
@@ -196,7 +203,7 @@ AI 生图任务表已保存 `site`，且已确认历史运营任务的站点数�
 - 接口提测或正式上线前，由产品徐强将本次变更同步给 Listing 负责人，说明 `orderSourceIds` 改为非必填、新增非必填入参 `site`，以及响应明细新增来源店铺 `orderSourceId` 和来源站点 `site`。
 - Listing 本期无需同步接入新查询模式，但需确认当前线上版本能够兼容新增返回字段，不会因严格反序列化、字段校验或前端解析导致现有取图异常。
 - 优先使用当前线上 Listing 版本调用升级后的接口，验证请求成功、响应解析成功、图片正常展示和选择。正常预期为新增字段不影响老调用方，但正式上线前仍需完成沟通确认。
-- 接口开发完成后同步更新 ShowDoc：将 `orderSourceIds` 调整为非必填，新增 `site` 入参，补充 `orderSourceId`、`site` 出参、三种请求示例及参数优先级。
+- 接口开发完成后同步更新 ShowDoc：将 `orderSourceIds` 调整为非必填，新增 `site` 入参，补充 `orderSourceId`、`site` 出参、三种请求示例及参数优先级，并保留 `personDetectStatus` 的字段定义和枚举说明。
 
 ## 风险描述
 
@@ -226,13 +233,15 @@ AI 生图任务表已保存 `site`，且已确认历史运营任务的站点数�
 | 11 | 查询结果同时存在 `imageType=1、2、3、4、5` | 只返回 1～4；标准普通 A+ 图 `imageType=5` 不返回。`imageType=2` 不因 `isWhiteBackGround` 预留逻辑被错误排除。 |
 | 12 | 当前登录用户与来源店铺不属于同一组织、部门或店铺权限范围 | 站点+ASIN及纯 ASIN模式仍可返回符合条件的图片；无有效鉴权时仍按现有规则拒绝访问。 |
 | 13 | 查询无符合条件的图片 | 返回 `success=true`、`images=[]`、`hasAvailableImages=false`；站点+ASIN及纯 ASIN模式下 `orderSourceIds=[]`。 |
-| 14 | 查询有图片 | `hasAvailableImages=true`；每张图片返回准确的 `orderSourceId` 和 `site`，顶层 `orderSourceIds` 按请求参数回显。 |
+| 14 | 三种查询模式分别查询到图片 | `hasAvailableImages=true`；每张图片返回准确的 `orderSourceId`、`site` 和 `personDetectStatus`，顶层 `orderSourceIds` 按请求参数回显。 |
 | 15 | `asin` 缺失或仅包含空格 | 返回参数错误，不返回业务数据。 |
-| 16 | 对比接口升级前后的原模式响应 | 原有字段名称、类型、图片范围、排序、全量返回及 `isWhiteBackGround` 现有行为保持不变，新增字段不影响老调用方解析。 |
-| 17 | 接口开发完成并准备交付下游使用 | ShowDoc 已更新 `orderSourceIds` 必填规则、`site` 入参、`orderSourceId`/`site` 出参、三种请求示例及参数优先级。 |
+| 16 | 对比接口升级前后的原模式响应 | 原有字段名称、类型、图片范围、排序、全量返回及 `isWhiteBackGround` 现有行为保持不变；`personDetectStatus` 的 `Integer` 类型、四个枚举含义和空值映射保持不变，新增字段不影响老调用方解析。 |
+| 17 | 接口开发完成并准备交付下游使用 | ShowDoc 已更新 `orderSourceIds` 必填规则、`site` 入参、`orderSourceId`/`site` 出参、三种请求示例及参数优先级，并保留 `personDetectStatus` 的字段定义和枚举说明。 |
 
 ## 关联需求与参考资料
 
+- 前置需求：M-36753【AI生图】[运营]图片查询接口新增人物检测结果出参
+- 关联 PRD：[M-36753 人物检测结果出参需求](../M-36753-image-query-person-detection-status/README.md)
 - 现有接口：`POST /open/aiImageOperation/image/query`
 - 内网接口文档：[运营版生图记录查询接口](http://showdoc.zhcxkj.com/web/#/124/6536)
 - 影响模块：运营版 AI 生图开放接口、Listing 管理图片查询链路
