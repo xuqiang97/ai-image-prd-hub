@@ -104,6 +104,7 @@ M-35944-asin-query-logic
 
 | 日期 | 需求编号 | 业务端 | 需求名称 | 需求类型 | PRD |
 |---|---|---|---|---|---|
+| 2026-08-17 | M-37085 | 美工+运营 | LinkFox商品套图接口升级V4并新增Seedream 5.0 Pro子模型 | 接口 | [查看 PRD](prd/2026-08/M-37085-linkfox-product-suite-v4-seedream/README.md) |
 | 2026-07-29 | M-36754 | 美工 | 产品库商品图及A+图推送同步人物检测结果 | 接口 | [查看 PRD](prd/2026-07/M-36754-product-library-person-detection-result/README.md) |
 | 2026-07-29 | M-36753 | 运营 | 图片查询接口新增人物检测结果出参 | 接口 | [查看 PRD](prd/2026-07/M-36753-image-query-person-detection-status/README.md) |
 | 2026-07-28 | M-36678 | 美工+运营 | 亚马逊平台紧急要求检测并标记是否有AI生成人物 | 规则 | [查看 PRD](prd/2026-07/M-36678-ai-person-detection-marking/README.md) |
