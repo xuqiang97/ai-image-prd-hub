@@ -20,7 +20,7 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-08
 
 美工版、运营版 AI 生图已支持在现有“LinkFox子模型”下拉中选择谷歌香蕉、GPT图片2、LinkFox自研模型V1、万相2.7等子模型，并在 LinkFox 计划生成张数大于 `0` 时调用商品套图建任务接口。
 
-当前系统实际调用的 V3 接口为 `/linkfox-ai/image/v2/make/productMarketMaterialV3`。LinkFox 已下线 V3 接口文档并停止维护该版本，新增模型需迁移至 V4 接口 `/linkfox-ai/image/v4/make/productMarketMaterial`。LinkFox 对接研发已确认 V4 是 V3 的后续优化版本，可直接切换；研发仍需结合现网真实 V3 请求与 V4 文档完成字段和响应兼容核对。
+当前系统实际调用的 V3 接口为 `/linkfox-ai/image/v2/make/productMarketMaterialV3`。LinkFox 已将 V3 接口文档从常规文档目录下线并停止维护该版本，现已取得 LinkFox 技术提供的商品套图 V3 分享文档；新增模型仍需迁移至 V4 接口 `/linkfox-ai/image/v4/make/productMarketMaterial`。LinkFox 对接研发已确认 V4 是 V3 的后续优化版本，可直接切换；研发需结合 V3 分享文档、现网真实 V3 请求和响应与 V4 官方文档完成字段和响应兼容核对。
 
 在本次接口核对过程中，确认 LinkFox 已调整第三方子模型的算力计费口径：由原先不区分参考图数量的固定价格，调整为根据请求中 `imageList` 的实际数量区分单参考图和多参考图价格；`AIDRAW_EDIT` 对应的“LinkFox自研模型V1”不参与分档，仍统一为 `20` 算力/张。当前页面仍展示旧的固定价格，需同步更新，避免用户在选择 GPT图片2高品质等高算力模型时缺少准确的成本参考。
 
@@ -55,7 +55,7 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-08
 3. V4 请求失败时沿用现有任务失败处理，不自动回退 V3、V2或其他 LinkFox 子模型。
 4. 本期仅调整商品套图建任务接口；现有结果查询、轮询、状态判断、任务流转、结果关联和图片落库逻辑保持不变，不新增成功状态门槛、重试机制或状态规则。
 5. 上线前由 V3 已创建但尚未完成的任务，继续沿用现有查询链路获取结果，不因建任务接口切换而中断。
-6. 研发需使用现网真实 V3 请求和响应与 V4 官方文档逐项核对字段名称、层级、类型、必填规则、鉴权、请求头、任务 ID 及错误返回；发现差异时先反馈产品确认，不得根据字段名称自行改变业务口径。
+6. 研发需使用 V3 分享文档、现网真实 V3 请求和响应与 V4 官方文档逐项核对字段名称、层级、类型、必填规则、鉴权、请求头、任务 ID 及错误返回。V3 分享文档与现网实际调用不一致时，以现网真实 V3 请求和响应作为当前行为基线，并先反馈产品或 LinkFox 确认，不得仅根据分享文档或字段名称自行改变业务口径。
 7. 上线前确认生产账号已开通 V4 和 `SEEDREAM5_PRO` 调用权限；上线后通过出站请求日志确认不再产生 V3、V2 建任务调用。
 
 ### 2. LinkFox子模型选项与算力展示
@@ -154,7 +154,7 @@ https://open.ziniao.com/docSupport?docId=176
 
 | 风险 | 处理方式 |
 |---|---|
-| V3 文档已下线，文档字段无法直接回溯 | 以现网真实 V3 请求、响应和已保存 Postman 地址为当前基线，与 V4 官方文档逐项核对后再切换。 |
+| V3 分享文档可能经过后续补充，与现网实际 V3 能力存在版本差异 | V3 分享文档仅作为字段参考，以现网真实 V3 请求、响应和已保存 Postman 记录作为当前行为基线，与 V4 官方文档逐项核对；发现不一致时先反馈产品或 LinkFox 确认。 |
 | 生产账号未开通 V4 或 Seedream 5.0 Pro | 提测和上线前使用生产同等权限账号完成真实建任务验证。 |
 | 上游默认值后续调整导致生成规格变化 | 对2K分辨率和适用图片类型的1:1素材宽高比显式传参，不依赖默认值。 |
 | 上游算力规则调整后页面文案滞后 | 页面保留“仅供参考、以官方最新说明为准”，提测和上线前再次核对官方价格表。 |
@@ -183,13 +183,14 @@ https://open.ziniao.com/docSupport?docId=176
 | 15 | 检查任务配置、生成过程、图片结果、L3和 BI | `SEEDREAM5_PRO` 可正确记录、同步和展示，不被识别为未知模型或系统一级“自研模型”。 |
 | 16 | 回归任务列表页、L2审核工作台、自研和阿里绘蛙链路 | 不新增 LinkFox 子模型展示或筛选；自研、阿里绘蛙请求和原有业务流程不受影响。 |
 | 17 | 分别创建仅普通A+、普通A+与其他图片类型混合、仅白底特写图的任务 | 仅普通A+且四个适用图片类型数量均为 `0` 时不传 `aspectRatio`；其余两类场景均显式传 `aspectRatio=1:1`，普通A+结果不受该字段影响。 |
-| 18 | 核对 V4 接口兼容、显式传参及生产权限 | V3、V4字段和响应兼容；`resolution`、适用场景的 `aspectRatio` 均按规则显式传入；生产权限和单多参考图价格与官方最新口径一致；无真实 Authorization、Token、Cookie 或密钥写入仓库及测试材料。 |
+| 18 | 核对 V4 接口兼容、显式传参及生产权限 | 已完成 V3 分享文档、现网真实 V3 请求和响应与 V4 官方文档的逐项核对，V3、V4字段和响应兼容；`resolution`、适用场景的 `aspectRatio` 均按规则显式传入；生产权限和单多参考图价格与官方最新口径一致；无真实 Authorization、Token、Cookie 或密钥写入仓库及测试材料。 |
 
 ## 关联需求与参考资料
 
 - 前置需求：M-35698【AI生图】支持选择LinkFox子模型
 - 历史 PRD：https://github.com/xuqiang97/ai_image_linkfox_submodel/blob/main/README.md
 - 历史原型：https://xuqiang97.github.io/ai_image_linkfox_submodel/
+- LinkFox 商品套图 V3 分享文档：https://open.ziniao.com/docSupport?shareId=mQdUaQLALk
 - LinkFox 商品套图 V4 文档：https://open.ziniao.com/docSupport?docId=293
 - LinkFox 算力说明：https://open.ziniao.com/docSupport?docId=176
 - 当前 V3 接口：`/linkfox-ai/image/v2/make/productMarketMaterialV3`（以现网真实调用和已保存 Postman 记录为准）
