@@ -261,8 +261,8 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-08
 
 ## 关联需求与参考资料
 
-- 前置需求：M-35270【AI生图】查看已完成生图
+- 前置需求：M-35270【AI生图】查看已完成生图：https://pm.zhcxkj.com/zentao/story-view-35270.html
 - 历史需求及原型：https://github.com/xuqiang97/ai_image_completed
 - 批量搜索查询组件历史需求：https://github.com/xuqiang97/ai_image_batch_search
-- LinkFox子模型关联 PRD：[M-37085 LinkFox商品套图接口升级V4并新增Seedream 5.0 Pro子模型](../M-37085-linkfox-product-suite-v4-seedream/README.md)
+- LinkFox子模型关联需求：M-37085【AI生图】LinkFox商品套图接口升级V4并新增Seedream 5.0 Pro子模型：https://pm.zhcxkj.com/zentao/story-view-37085.html
 - 影响模块：美工版查看已完成生图页面及独立查询接口、运营版查看已完成生图页面及独立查询接口
