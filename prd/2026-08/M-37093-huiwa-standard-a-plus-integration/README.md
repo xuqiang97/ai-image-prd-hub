@@ -154,9 +154,9 @@ https://huiwa.yuque.com/org-wiki-huiwa-kpqu3p/gp328g/lcf8hemny07b8avi
 - 多模型历史原型：https://xuqiang97.github.io/ai_image_multimodels/
 - 美工版支持标普A+历史需求：https://pm.zhcxkj.com/zentao/story-view-35815.html
 - 美工版支持生成图片语言历史需求：https://pm.zhcxkj.com/zentao/story-view-35813.html
-- 阿里绘蛙图片宽高处理：[M-36575](../../2026-07/M-36575-huiwa-image-dimensions/README.md)
-- 模型与数量配置缓存：[M-36422](../../2026-07/M-36422-model-quantity-cache/README.md)
-- 运营版标普A+审核上限：[M-36570](../../2026-07/M-36570-standard-a-plus-approval-limit/README.md)
+- 阿里绘蛙图片宽高处理：https://pm.zhcxkj.com/zentao/story-view-36575.html
+- 模型与数量配置缓存：https://pm.zhcxkj.com/zentao/story-view-36422.html
+- 运营版标普A+审核上限：https://pm.zhcxkj.com/zentao/story-view-36570.html
 - 阿里绘蛙建任务接口：https://huiwa.yuque.com/org-wiki-huiwa-kpqu3p/gp328g/ghdn76cxe0iiu80p
 - 阿里绘蛙查结果接口：https://huiwa.yuque.com/org-wiki-huiwa-kpqu3p/gp328g/lcf8hemny07b8avi
 - 影响模块：美工版、运营版 AI 生图阿里绘蛙商品套图建任务、查结果、任务配置、图片结果、审核及既有推送链路
