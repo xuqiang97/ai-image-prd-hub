@@ -187,7 +187,7 @@ https://open.ziniao.com/docSupport?docId=176
 
 ## 关联需求与参考资料
 
-- 前置需求：M-35698【AI生图】支持选择LinkFox子模型
+- 前置需求：M-35698【AI生图】支持选择LinkFox子模型：https://pm.zhcxkj.com/zentao/story-view-35698.html
 - 历史 PRD：https://github.com/xuqiang97/ai_image_linkfox_submodel/blob/main/README.md
 - 历史原型：https://xuqiang97.github.io/ai_image_linkfox_submodel/
 - LinkFox 商品套图 V3 分享文档：https://open.ziniao.com/docSupport?shareId=mQdUaQLALk
