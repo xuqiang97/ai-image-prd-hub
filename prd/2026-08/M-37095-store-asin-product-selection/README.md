@@ -4,6 +4,14 @@
 
 GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-08/M-37095-store-asin-product-selection/README.md
 
+## 关联需求与参考资料
+
+- 历史需求：[M-35944【AI生图】\[运营\]店铺ASIN商品取数逻辑优化](https://pm.zhcxkj.com/zentao/story-view-35944.html)
+- 最初需求文档：[运营版 AI 生图初版需求文档 - 内部取数接口](https://www.yuque.com/johnny97pm/zhcx/saleaiimageprd?singleDoc#h2KRR)
+- 上游接口文档：http://showdoc.zhcxkj.com/web/#/88/5259
+- 上游接口：`POST http://open-api.zhcxkj.com/open/list/amazon-listing-asin`
+- 说明：接口文档仅作为字段含义参考，字段是否返回、实际层级和实际值以接口真实响应为准。
+
 ## 修改纪要
 
 | 日期 | 版本 | 修改人 | 主要修改点 |
@@ -35,13 +43,6 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-08
 - 不调整上游接口的请求参数、响应字段和接口内部逻辑。
 - 不调整页面交互、展示样式、提示文案及批量导入格式，无需单独制作 HTML 原型。
 - 选出同一套资料的 MSKU 和 SKU 后，商品信息查询、字段回显、快照、任务创建、审核和后续推送等现有流程保持不变。
-
-## 关联需求与参考资料
-
-- 历史需求：M-35944【AI生图】[运营]店铺ASIN商品取数逻辑优化
-- 上游接口文档：http://showdoc.zhcxkj.com/web/#/88/5259
-- 上游接口：`POST http://open-api.zhcxkj.com/open/list/amazon-listing-asin`
-- 说明：接口文档仅作为字段含义参考，字段是否返回、实际层级和实际值以接口真实响应为准。
 
 ## 功能需求
 
