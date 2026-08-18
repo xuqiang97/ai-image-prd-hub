@@ -4,7 +4,7 @@ GitHub 文档：
 
 https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-08/M-37095-store-asin-product-selection/docs/store-asin-data-retrieval-flow.md
 
-归属需求：M-37095【AI生图】[运营]店铺ASIN多套商品资料择优取数逻辑优化
+归属需求：[M-37095【AI生图】\[运营\]店铺ASIN多套商品资料择优取数逻辑优化](https://pm.zhcxkj.com/zentao/story-view-37095.html)
 
 父级正式 PRD：
 
