@@ -6,6 +6,14 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-08
 
 ## 关联需求与参考资料
 
+### 【必看】完整取数链路辅助文档（研发、测试实施前必读）
+
+运营版店铺 ASIN 完整取数链路说明：
+
+https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-08/M-37095-store-asin-product-selection/docs/store-asin-data-retrieval-flow.md
+
+文档定位：该文档是本需求的下级辅助文档，不构成独立需求；完整取数链路以该文档为参考，本期正式改造范围和验收口径仍以本 README 为准。
+
 - 历史需求：[M-35944【AI生图】\[运营\]店铺ASIN商品取数逻辑优化](https://pm.zhcxkj.com/zentao/story-view-35944.html)
 - 最初需求文档：[运营版 AI 生图初版需求文档 - 内部取数接口](https://www.yuque.com/johnny97pm/zhcx/saleaiimageprd?singleDoc#h2KRR)
 - 上游接口文档：http://showdoc.zhcxkj.com/web/#/88/5259
@@ -26,7 +34,7 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-08
 
 ## 业务背景和价值
 
-运营版 AI 生图在新增任务、编辑任务重新查询及批量导入店铺 ASIN 时，会使用店铺 ID（`sourceId`）+ ASIN 调用 Amazon Listing 接口查询商品资料，并使用选中资料的 MSKU 和 SKU 继续现有商品处理链路。
+运营版 AI 生图在新增任务查询及批量导入店铺 ASIN 时，会使用店铺 ID（`sourceId`）+ ASIN 调用 Amazon Listing 接口查询商品资料，并使用选中资料的 MSKU 和 SKU 继续现有商品处理链路。
 
 同一店铺 ID + ASIN 可能返回多套商品资料。现有多套资料处理依赖“FBA 新品中的第一套”，没有先统一排除已删除、禁显资料，也没有在同级资料中按更新时间择优。已确认案例中，现有逻辑取到了一套已删除资料，不能满足业务实际使用诉求。
 
@@ -39,7 +47,7 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-08
 本需求仅调整 AI 生图调用现有 Amazon Listing 接口后，对同一店铺 ID + ASIN 返回的多套商品资料进行筛选、排序，并成对选取 MSKU 和 SKU 的逻辑。
 
 - 直接改造点：AI 生图运营端共用的店铺 ID + ASIN 商品资料择优逻辑。
-- 回归入口：运营版新增任务抽屉、运营版编辑任务抽屉重新查询、运营版批量导入店铺 ASIN 弹窗。
+- 回归入口：运营版新增任务抽屉、运营版批量导入店铺 ASIN 弹窗。
 - 不调整上游接口的请求参数、响应字段和接口内部逻辑。
 - 不调整页面交互、展示样式、提示文案及批量导入格式，无需单独制作 HTML 原型。
 - 选出同一套资料的 MSKU 和 SKU 后，商品信息查询、字段回显、快照、任务创建、审核和后续推送等现有流程保持不变。
@@ -121,7 +129,7 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-08
 
 ### 5. 单个查询与批量导入一致性
 
-- 运营版新增任务和编辑任务重新查询使用同一套规则。
+- 运营版新增任务查询和批量导入使用同一套规则。
 - 批量导入继续使用现有输入格式，每行一个店铺 + ASIN，单次最多 50 行。
 - 批量场景中，每个店铺 ID + ASIN 组合均独立执行硬排除、排序和 MSKU/SKU 成对取值；不得用某一行的候选资料或排序结果影响其他行。
 - 无论实现上采用逐条请求还是批量请求，同一店铺 ID + ASIN 的最终结果必须与单个查询一致。
@@ -212,13 +220,13 @@ GitHub PRD：https://github.com/xuqiang97/ai-image-prd-hub/blob/main/prd/2026-08
 | 若把 FBA 与新品绑定，或重复使用 `isStock` 加权，会改变已确认的独立维度优先级 | 必须严格按逐级排序表实现，不得增加复合权重或未确认字段 |
 | 同一查询组合下的 `sku` 不保证相同，若将选中资料的 `msku` 与其他资料的 `sku` 拼接，会造成商品关联错误 | MSKU 和 SKU 必须从最终命中的同一个结果对象成对读取；任一字段缺失或为空时继续降级 |
 | 接口原始顺序不稳定，继续依赖“第一条”可能重复出现错误选择 | 仅在全部已确认维度完全相同时，才使用接口原始顺序兜底 |
-| 三个运营入口若未复用同一逻辑，可能出现相同店铺 ID + ASIN 结果不一致 | 三个入口分别回归，并验证单个查询与批量导入结果一致 |
+| 两个运营入口若未复用同一逻辑，可能出现相同店铺 ID + ASIN 结果不一致 | 两个入口分别回归，并验证单个查询与批量导入结果一致 |
 
 ## 验收标准
 
 | 编号 | 验收场景 | 预期结果 |
 |---|---|---|
-| 1 | 分别在运营版新增任务、编辑任务重新查询、批量导入中查询同一店铺 ID + ASIN | 三个入口使用同一规则；候选资料相同时选中同一套资料的相同 MSKU 和 SKU |
+| 1 | 分别在运营版新增任务和批量导入中查询同一店铺 ID + ASIN | 两个入口使用同一规则；候选资料相同时选中同一套资料的相同 MSKU 和 SKU |
 | 2 | 候选资料中分别存在 `isDeleted != 0`、`visibleStatus = 1` 或 `delStatus = 1` | 命中任一条件的资料均被排除，且不得重新进入降级范围 |
 | 3 | 查询 `sourceId = 26342`、`ASIN = B0811WKXQ8` | 排除已删除的 `TK1026076FE264RV`，最终从同一套资料取得 `msku = 5H144012G55GAVMF`、`sku = 6409613` |
 | 4 | 同一查询组合的多套资料存在不同 `sku`，且最终命中资料不是接口第一条 | MSKU 和 SKU 均取自最终命中的同一个结果对象，不得使用接口第一条或其他资料的 SKU |
