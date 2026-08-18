@@ -149,7 +149,7 @@ https://huiwa.yuque.com/org-wiki-huiwa-kpqu3p/gp328g/lcf8hemny07b8avi
 
 ## 关联需求与参考资料
 
-- 前置需求：M-35283【AI生图】支持多模型并行
+- 前置需求：M-35283【AI生图】支持多模型并行：https://pm.zhcxkj.com/zentao/story-view-35283.html
 - 多模型历史 PRD：https://github.com/xuqiang97/ai_image_multimodels/blob/main/README.md
 - 多模型历史原型：https://xuqiang97.github.io/ai_image_multimodels/
 - 美工版支持标普A+历史需求：https://pm.zhcxkj.com/zentao/story-view-35815.html
