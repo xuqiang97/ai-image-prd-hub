@@ -130,6 +130,7 @@ M-35944-asin-query-logic
 
 | 日期 | 需求编号 | 业务端 | 需求名称 | 需求类型 | PRD |
 |---|---|---|---|---|---|
+| 2026-08-20 | M-36793 | 美工+运营 | 查看已完成生图数据权限对离职员工优化 | 规则 | [查看 PRD](prd/2026-08/M-36793-completed-image-former-employee-permission/README.md) |
 | 2026-08-20 | M-37150 | 美工 | 系统SKU取数商品图文信息统一优化并覆盖老品自动取图场景 | 规则 | [查看 PRD](prd/2026-08/M-37150-artist-sku-product-content-retrieval/README.md) |
 | 2026-08-18 | M-37095 | 运营 | 店铺ASIN多套商品资料择优取数逻辑优化 | 规则 | [查看 PRD](prd/2026-08/M-37095-store-asin-product-selection/README.md) |
 | 2026-08-17 | M-37094 | 美工+运营 | 查看已完成生图支持第三方ID、图片名及LinkFox子模型查询 | 规则 | [查看 PRD](prd/2026-08/M-37094-completed-image-id-submodel-search/README.md) |
