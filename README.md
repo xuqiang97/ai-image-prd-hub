@@ -136,6 +136,7 @@ M-35944-asin-query-logic
 
 | 日期 | 需求编号 | 业务端 | 需求名称 | 需求类型 | PRD |
 |---|---|---|---|---|---|
+| 2026-09-24 | M-37768 | 美工+运营 | 参考图对象存储路径和文件名命名统一规整 | 规则 | [查看 PRD](prd/2026-09/M-37768-reference-image-storage-naming/README.md) |
 | 2026-09-24 | M-37767 | 美工+运营 | 生成图对象存储路径命名统一规整 | 规则 | [查看 PRD](prd/2026-09/M-37767-generated-image-storage-path/README.md) |
 | 2026-09-07 | M-37218 | 美工+运营 | 图片二改能力构建 | 其他 | [查看 PRD](prd/2026-09/M-37218-image-secondary-editing/README.md) |
 | 2026-08-20 | M-36793 | 美工+运营 | 查看已完成生图数据权限对离职员工优化 | 规则 | [查看 PRD](prd/2026-08/M-36793-completed-image-former-employee-permission/README.md) |
